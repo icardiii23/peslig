@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PES Lig</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="logo">PES LİGİ</div>
+    </div>
+  </header>
+
+  <div class="container">
+    <section class="hero">
+      <h1 id="leagueTitle">PES Ligi</h1>
+      <p>Canlı puan durumu, fikstür ve gol krallığı.</p>
+    </section>
+
+    <section class="section">
+      <div class="grid grid-3">
+        <div class="stat-box"><div class="stat-title">Toplam Takım</div><div class="stat-value" id="statPlayers">0</div></div>
+        <div class="stat-box"><div class="stat-title">Oynanan Maç</div><div class="stat-value" id="statPlayed">0</div></div>
+        <div class="stat-box"><div class="stat-title">Toplam Gol</div><div class="stat-value" id="statGoals">0</div></div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <h2>Puan Durumu</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Takım</th><th>O</th><th>G</th><th>B</th><th>M</th><th>AG</th><th>YG</th><th>AV</th><th>P</th></tr>
+          </thead>
+          <tbody id="standingsTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="grid grid-2 section">
+      <div class="card"><h2>Fikstür</h2><div id="fixturesPublic" class="list"></div></div>
+      <div class="card"><h2>Gol Krallığı</h2><div id="scorersTable" class="list"></div></div>
+    </section>
+  </div>
+
+  <script>
+    // --- BURADAN DÜZENLE ---
+    const myTeams = [
+        { id: "1", name: "Galatasaray" },
+        { id: "2", name: "Beşiktaşşak" },
+        { id: "3", name: "Kasımpaşa" },
+        { id: "4", name: "Inter Miami" },
+    ];
+
+   
+const myFixtures = [
+    { id: "h1_m1", week: 1, home: "1", away: "2", homeScore: 3, awayScore: 1, played: true, homeScorers: [{name: "Osimhen", goals: 3}], awayScorers: [{name: "Test", goals: 1}] },
+    { id: "h1_m2", week: 1, home: "3", away: "4", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h2_m1", week: 2, home: "1", away: "3", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h2_m2", week: 2, home: "2", away: "4", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h3_m1", week: 3, home: "1", away: "4", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h3_m2", week: 3, home: "2", away: "3", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h4_m1", week: 4, home: "2", away: "1", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h4_m2", week: 4, home: "4", away: "3", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h5_m1", week: 5, home: "3", away: "1", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h5_m2", week: 5, home: "4", away: "2", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h6_m1", week: 6, home: "4", away: "1", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h6_m2", week: 6, home: "3", away: "2", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h7_m1", week: 7, home: "1", away: "2", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h7_m2", week: 7, home: "3", away: "4", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h8_m1", week: 8, home: "1", away: "3", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h8_m2", week: 8, home: "2", away: "4", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h9_m1", week: 9, home: "1", away: "4", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h9_m2", week: 9, home: "2", away: "3", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h10_m1", week: 10, home: "2", away: "1", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h10_m2", week: 10, home: "4", away: "3", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h11_m1", week: 11, home: "3", away: "1", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h11_m2", week: 11, home: "4", away: "2", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h12_m1", week: 12, home: "4", away: "1", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h12_m2", week: 12, home: "3", away: "2", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h13_m1", week: 13, home: "1", away: "2", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h13_m2", week: 13, home: "3", away: "4", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h14_m1", week: 14, home: "1", away: "3", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h14_m2", week: 14, home: "2", away: "4", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h15_m1", week: 15, home: "1", away: "4", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h15_m2", week: 15, home: "2", away: "3", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h16_m1", week: 16, home: "2", away: "1", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h16_m2", week: 16, home: "4", away: "3", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h17_m1", week: 17, home: "3", away: "1", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h17_m2", week: 17, home: "4", away: "2", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h18_m1", week: 18, home: "4", away: "1", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h18_m2", week: 18, home: "3", away: "2", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h19_m1", week: 19, home: "1", away: "2", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h19_m2", week: 19, home: "3", away: "4", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h20_m1", week: 20, home: "1", away: "3", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h20_m2", week: 20, home: "2", away: "4", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h21_m1", week: 21, home: "1", away: "4", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h21_m2", week: 21, home: "2", away: "3", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h22_m1", week: 22, home: "2", away: "1", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h22_m2", week: 22, home: "4", away: "3", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h23_m1", week: 23, home: "3", away: "1", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h23_m2", week: 23, home: "4", away: "2", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h24_m1", week: 24, home: "4", away: "1", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] },
+    { id: "h24_m2", week: 24, home: "3", away: "2", homeScore: null, awayScore: null, played: false, homeScorers: [], awayScorers: [] }
+];
+   
+    // --- DÜZENLEME BİTİŞ ---
+
+    // Fonksiyonlar
+    function getTeams() { return myTeams; }
+    function getFixtures() { return myFixtures; }
+
+    function renderStats() {
+      const teams = getTeams();
+      const fixtures = getFixtures();
+      const played = fixtures.filter(f => f.played);
+      document.getElementById("statPlayers").textContent = teams.length;
+      document.getElementById("statPlayed").textContent = played.length;
+      document.getElementById("statGoals").textContent = played.reduce((s, m) => s + (m.homeScore + m.awayScore), 0);
+    }
+
+    function renderStandings() {
+      const table = getTeams().map(t => ({...t, played:0, win:0, draw:0, lose:0, gf:0, ga:0, pts:0}));
+      getFixtures().filter(m => m.played).forEach(m => {
+        const h = table.find(t => t.id == m.home);
+        const a = table.find(t => t.id == m.away);
+        h.played++; a.played++;
+        h.gf += m.homeScore; h.ga += m.awayScore;
+        a.gf += m.awayScore; a.ga += m.homeScore;
+        if(m.homeScore > m.awayScore) { h.win++; h.pts += 3; }
+        else if(m.homeScore < m.awayScore) { a.win++; a.pts += 3; }
+        else { h.draw++; a.draw++; h.pts += 1; a.pts += 1; }
+      });
+      table.sort((a,b) => b.pts - a.pts);
+      const tbody = document.getElementById("standingsTable");
+      tbody.innerHTML = table.map((t, i) => `<tr><td>${i+1}</td><td>${t.name}</td><td>${t.played}</td><td>${t.win}</td><td>${t.draw}</td><td>${t.lose}</td><td>${t.gf}</td><td>${t.ga}</td><td>${t.gf-t.ga}</td><td><strong>${t.pts}</strong></td></tr>`).join("");
+    }
+
+    function renderFixtures() {
+      const list = document.getElementById("fixturesPublic");
+      list.innerHTML = getFixtures().map(m => {
+        const h = getTeams().find(t => t.id == m.home);
+        const a = getTeams().find(t => t.id == m.away);
+        return `<div class="fixture-item"><strong>Hafta ${m.week}</strong><br>${h.name} vs ${a.name} <div class="fixture-score">${m.played ? m.homeScore +"-"+ m.awayScore : "Bekliyor"}</div></div>`;
+      }).join("");
+    }
+
+    function renderScorers() {
+      const scorers = {};
+      getFixtures().forEach(m => {
+        [...m.homeScorers, ...m.awayScorers].forEach(s => {
+          scorers[s.name] = (scorers[s.name] || 0) + s.goals;
+        });
+      });
+      document.getElementById("scorersTable").innerHTML = Object.entries(scorers)
+        .sort((a,b) => b[1] - a[1])
+        .map(([name, goals], i) => `<div class="scorer-item">${i+1}. ${name} - ${goals} Gol</div>`).join("");
+    }
+
+    renderStats(); renderStandings(); renderFixtures(); renderScorers();
+  </script>
+</body>
+</html>
