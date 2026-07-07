@@ -130,18 +130,37 @@ const myFixtures = [
       document.getElementById("statGoals").textContent = played.reduce((s, m) => s + (m.homeScore + m.awayScore), 0);
     }
 
-    function renderStandings() {
+   function renderStandings() {
       const table = getTeams().map(t => ({...t, played:0, win:0, draw:0, lose:0, gf:0, ga:0, pts:0}));
+      
       getFixtures().filter(m => m.played).forEach(m => {
         const h = table.find(t => t.id == m.home);
         const a = table.find(t => t.id == m.away);
-        h.played++; a.played++;
-        h.gf += m.homeScore; h.ga += m.awayScore;
-        a.gf += m.awayScore; a.ga += m.homeScore;
-        if(m.homeScore > m.awayScore) { h.win++; h.pts += 3; }
-        else if(m.homeScore < m.awayScore) { a.win++; a.pts += 3; }
-        else { h.draw++; a.draw++; h.pts += 1; a.pts += 1; }
+        
+        h.played++; 
+        a.played++;
+        h.gf += m.homeScore; 
+        h.ga += m.awayScore;
+        a.gf += m.awayScore; 
+        a.ga += m.homeScore;
+        
+        // Burası güncellendi:
+        if(m.homeScore > m.awayScore) { 
+          h.win++; 
+          h.pts += 3; 
+          a.lose++; // Mağlubiyet eklendi
+        } else if(m.homeScore < m.awayScore) { 
+          a.win++; 
+          a.pts += 3; 
+          h.lose++; // Mağlubiyet eklendi
+        } else { 
+          h.draw++; 
+          a.draw++; 
+          h.pts += 1; 
+          a.pts += 1; 
+        }
       });
+      
       table.sort((a,b) => b.pts - a.pts);
       const tbody = document.getElementById("standingsTable");
       tbody.innerHTML = table.map((t, i) => `<tr><td>${i+1}</td><td>${t.name}</td><td>${t.played}</td><td>${t.win}</td><td>${t.draw}</td><td>${t.lose}</td><td>${t.gf}</td><td>${t.ga}</td><td>${t.gf-t.ga}</td><td><strong>${t.pts}</strong></td></tr>`).join("");
